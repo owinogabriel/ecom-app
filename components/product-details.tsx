@@ -3,27 +3,27 @@
 import Stripe from "stripe";
 import Image from "next/image";
 import { Button } from "./ui/button";
-
+import { useCartStore } from "@/store/cart-store";
 
 interface Props {
   product: Stripe.Product;
 }
 
-export const ProductDetails = ({ product }: Props) => {
- 
+export const ProductDetail = ({ product }: Props) => {
+  const { items, addItem, removeItem } = useCartStore();
   const price = product.default_price as Stripe.Price;
-  // const cartItem = items.find((item) => item.id === product.id);
-  // const quantity = cartItem ? cartItem.quantity : 0;
+  const cartItem = items.find((item) => item.id === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
 
-  // const onAddItem = () => {
-  //   addItem({
-  //     id: product.id,
-  //     name: product.name,
-  //     price: price.unit_amount as number,
-  //     imageUrl: product.images ? product.images[0] : null,
-  //     quantity: 1,
-  //   });
-  // };
+  const onAddItem = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: price.unit_amount as number,
+      imageUrl: product.images ? product.images[0] : null,
+      quantity: 1,
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 items-center">
@@ -49,11 +49,11 @@ export const ProductDetails = ({ product }: Props) => {
           </p>
         )}
         <div className="flex items-center space-x-4">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => removeItem(product.id)}>
             –
           </Button>
-          <span className="text-lg font-semibold">0</span>
-          <Button variant="outline" className="">+</Button>
+          <span className="text-lg font-semibold">{quantity}</span>
+          <Button onClick={onAddItem}>+</Button>
         </div>
       </div>
     </div>
