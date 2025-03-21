@@ -1,16 +1,18 @@
 import { ProductDetail } from "@/components/product-details";
 import { stripe } from "@/lib/stripe";
 
-// Define the expected props type manually
-interface ProductPageProps {
-  params: { id: string }; // Ensure params contains an 'id' of type string
-}
+// Define props structure
+type ProductPageProps = {
+  params: { id: string }; // Ensure params contains an 'id' string
+};
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params }: { params: { id: string } }) {
   try {
+    if (!params?.id) throw new Error("Product ID is missing");
+
     // Fetch product details from Stripe API
     const product = await stripe.products.retrieve(params.id, {
-      expand: ["default_price"], // Expanding the default price details
+      expand: ["default_price"],
     });
 
     // Convert product to a plain JavaScript object to avoid serialization issues
